@@ -17,12 +17,15 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $type = $this->faker->randomElement(['common', 'shopkeeper']);
+        $document = $type === 'common' ? $this->generateValidCpf() : $this->generateValidCnpj();
+
         return [
             'full_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'cpf' => $this->generateValidCpf(),
-            'type' => $this->faker->randomElement(['common', 'shopkeeper']),
+            'document' => $document, // CPF ou CNPJ
+            'type' => $type, // 'common' ou 'shopkeeper'
             'balance' => $this->faker->randomFloat(2, 10, 1000),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
@@ -41,6 +44,11 @@ class UserFactory extends Factory
         ]);
     }
 
+    /**
+     * Gera um CPF válido.
+     *
+     * @return string
+     */
     private function generateValidCpf(): string
     {
         $n = [];
@@ -54,6 +62,13 @@ class UserFactory extends Factory
         return implode('', $n);
     }
 
+    /**
+     * Calcula os dígitos verificadores do CPF.
+     *
+     * @param array $n
+     * @param int $t
+     * @return int
+     */
     private function calculateCpfDigit(array $n, int $t): int
     {
         $sum = 0;
@@ -63,5 +78,46 @@ class UserFactory extends Factory
 
         $digit = ($sum * 10) % 11;
         return ($digit == 10) ? 0 : $digit;
+    }
+
+    /**
+     * Gera um CNPJ válido.
+     *
+     * @return string
+     */
+    private function generateValidCnpj(): string
+    {
+        $n = [];
+        for ($i = 0; $i < 12; $i++) {
+            $n[$i] = random_int(0, 9);
+        }
+
+        $n[12] = $this->calculateCnpjDigit($n, 5);
+        $n[13] = $this->calculateCnpjDigit($n, 6);
+
+        return implode('', $n);
+    }
+
+    /**
+     * Calcula os dígitos verificadores do CNPJ.
+     *
+     * @param array $n
+     * @param int $t
+     * @return int
+     */
+    private function calculateCnpjDigit(array $n, int $t): int
+    {
+        $sum = 0;
+        $pos = $t;
+
+        for ($i = 0; $i < $t - 1; $i++) {
+            $sum += $n[$i] * $pos--;
+            if ($pos < 2) {
+                $pos = 9;
+            }
+        }
+
+        $digit = ($sum % 11 < 2) ? 0 : 11 - ($sum % 11);
+        return $digit;
     }
 }

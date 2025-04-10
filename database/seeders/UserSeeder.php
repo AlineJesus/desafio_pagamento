@@ -21,6 +21,9 @@ class UserSeeder extends Seeder
             'document' => '85578814018',//CPF
             'type' => 'common',
             'balance' => 1000,
+            'password' => bcrypt('password123'), // Senha padrão
+            'email_verified_at' => now(), // Verificação de e-mail
+            'remember_token' => \Str::random(10), // Token de "lembrar-me"
         ]);
 
         User::factory()->create([
@@ -29,6 +32,9 @@ class UserSeeder extends Seeder
             'document' => '40125694000108',///CNPJ
             'type' => 'shopkeeper',
             'balance' => 1000,
+            'password' => bcrypt('password123'), // Senha padrão
+            'email_verified_at' => now(), // Verificação de e-mail
+            'remember_token' => \Str::random(10), // Token de "lembrar-me"
         ]);
     }
 }

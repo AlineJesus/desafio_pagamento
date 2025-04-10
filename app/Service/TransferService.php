@@ -8,15 +8,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Retry;
 use App\Exceptions\InsufficientBalanceException;
+use App\Jobs\SendNotificationJob;
+//use App\Services\NotificationService;
 
 class TransferService
 {
-    protected NotificationService $notificationService;
+    /* protected NotificationService $notificationService;
 
     public function __construct(NotificationService $notificationService)
     {
         $this->notificationService = $notificationService;
-    }
+    } */
 
     /**
      * Realiza a transferência de valores entre usuários.
@@ -63,7 +65,7 @@ class TransferService
         });
 
         // Envia uma notificação para o recebedor
-        $message = "Você recebeu uma transferência de R$ {$amount} de {$payer->full_name}.";
+        /* $message = "Você recebeu uma transferência de R$ {$amount} de {$payer->full_name}.";
         $notificationSent = Retry::times(3)->catch(function () {
             return false;
         })->run(function () use ($payee, $message) {
@@ -72,6 +74,9 @@ class TransferService
 
         if (!$notificationSent) {
             throw new \Exception('Falha ao enviar notificação ao recebedor após múltiplas tentativas.');
-        }
+        } */
+
+        SendNotificationJob::dispatch($payee);
+
     }
 }

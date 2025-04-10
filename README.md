@@ -75,8 +75,6 @@ DB_PORT=3306
 DB_DATABASE=desafio_pagamento
 DB_USERNAME=root
 DB_PASSWORD=
-
-QUEUE_CONNECTION=sync
 ```
 
 ---
@@ -102,7 +100,7 @@ php artisan migrate
 Popule o banco de dados com dados iniciais usando os seeders:
 
 ```bash
-php artisan db:seed
+php artisan db:seed --class=UserSeeder
 ```
 
 ---

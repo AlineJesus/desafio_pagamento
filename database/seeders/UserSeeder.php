@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'full_name' => 'Usuário comum',
             'email' => 'comum@teste.com',
-            'cpf' => '855.788.140-18',
+            'document' => '85578814018',//CPF
             'type' => 'common',
             'balance' => 1000,
         ]);
@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'full_name' => 'Lojista',
             'email' => 'lojista@teste.com',
-            'cpf' => '707.955.920-00',
+            'document' => '40125694000108',///CNPJ
             'type' => 'shopkeeper',
             'balance' => 1000,
         ]);

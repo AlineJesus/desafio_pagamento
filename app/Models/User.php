@@ -21,7 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'full_name',
         'email',
-        'cpf',
+        'document', //cfp ou cnpj
         'password',
         'type',    // 'common' ou 'shopkeeper'
         'balance', // Saldo do usuário
@@ -102,6 +102,71 @@ class User extends Authenticatable
 
         return true;
     }
+
+    /**
+     * Valida um CNPJ brasileiro.
+     *
+     * @param string $cnpj
+     * @return bool
+     */
+    public static function isValidCnpj(string $cnpj): bool
+    {
+        $cnpj = preg_replace('/\D/', '', $cnpj);
+
+        if (strlen($cnpj) != 14 || preg_match('/(\d)\1{13}/', $cnpj)) {
+            return false;
+        }
+
+        for ($t = 12; $t < 14; $t++) {
+            $sum = 0;
+            $pos = $t - 7;
+            for ($i = 0; $i < $t; $i++) {
+                $sum += $cnpj[$i] * $pos--;
+                if ($pos < 2) {
+                    $pos = 9;
+                }
+            }
+            $expectedDigit = ($sum % 11 < 2) ? 0 : 11 - ($sum % 11);
+            if ($cnpj[$t] != $expectedDigit) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Valida o documento (CPF ou CNPJ) com base no tipo de usuário.
+     *
+     * @return bool
+     */
+    public function isValidDocument(): bool
+    {
+        if ($this->type === 'common') {
+            return self::isValidCpf($this->document);
+        }
+
+        if ($this->type === 'shopkeeper') {
+            return self::isValidCnpj($this->document);
+        }
+
+        return false;
+    }
+
+    /**
+     * Evento para validar o documento antes de salvar.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            if (!$user->isValidDocument()) {
+                throw new \Exception('Documento inválido para o tipo de usuário.');
+            }
+        });
+    }
+
 }
 
 /* 

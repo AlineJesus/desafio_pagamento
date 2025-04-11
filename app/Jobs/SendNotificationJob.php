@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SendNotificationJob implements ShouldQueue
 {
@@ -54,6 +55,12 @@ class SendNotificationJob implements ShouldQueue
             ]);
 
             if ($response->successful()) {
+
+                Mail::raw($this->message, function ($message) {
+                    $message->to($this->email)
+                            ->subject('Notificação de Pagamento');
+                });
+
                 Log::info("Notification successfully sent to: {$this->email}");
             } else {
                 Log::warning("Notification service returned error for: {$this->email}", [

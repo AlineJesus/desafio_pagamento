@@ -6,6 +6,7 @@ use App\Http\Requests\TransferRequest;
 use App\Models\User;
 use App\Services\TransferService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -30,8 +31,10 @@ class TransactionController extends Controller
 
         try {
             $this->transferService->transfer($payer, $payee, $amount);
+            Log::info('Transferência realizada com sucesso');
             return response()->json(['message' => 'Transferência realizada com sucesso.'], 200);
         } catch (\Exception $e) {
+            Log::error('Erro na transferência', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 422);
         }
     }

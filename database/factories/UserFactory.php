@@ -46,8 +46,6 @@ class UserFactory extends Factory
 
     /**
      * Gera um CPF válido.
-     *
-     * @return string
      */
     private function generateValidCpf(): string
     {
@@ -65,8 +63,8 @@ class UserFactory extends Factory
     /**
      * Calcula os dígitos verificadores do CPF.
      *
-     * @param array<int, int> $n Números do CPF para cálculo.
-     * @param int $t Posição do dígito a ser calculado.
+     * @param  array<int, int>  $n  Números do CPF para cálculo.
+     * @param  int  $t  Posição do dígito a ser calculado.
      * @return int Dígito verificador calculado.
      */
     private function calculateCpfDigit(array $n, int $t): int
@@ -77,13 +75,12 @@ class UserFactory extends Factory
         }
 
         $digit = ($sum * 10) % 11;
+
         return ($digit == 10) ? 0 : $digit;
     }
 
     /**
      * Gera um CNPJ válido.
-     *
-     * @return string
      */
     private function generateValidCnpj(): string
     {
@@ -101,8 +98,8 @@ class UserFactory extends Factory
     /**
      * Calcula os dígitos verificadores do CNPJ.
      *
-     * @param array<int, int> $n Números do CNPJ para cálculo.
-     * @param int $t Posição do dígito a ser calculado.
+     * @param  array<int, int>  $n  Números do CNPJ para cálculo.
+     * @param  int  $t  Posição do dígito a ser calculado.
      * @return int Dígito verificador calculado.
      */
     private function calculateCnpjDigit(array $n, int $t): int
@@ -118,6 +115,7 @@ class UserFactory extends Factory
         }
 
         $digit = ($sum % 11 < 2) ? 0 : 11 - ($sum % 11);
+
         return $digit;
     }
 }

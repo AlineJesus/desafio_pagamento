@@ -31,9 +31,6 @@ class SendNotificationJob implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param string $email
-     * @param string $message
      */
     public function __construct(string $email, string $message = 'You have received a payment')
     {
@@ -51,28 +48,28 @@ class SendNotificationJob implements ShouldQueue
         try {
             $response = Http::post('https://util.devi.tools/api/v1/notify', [
                 'email' => $this->email,
-                'message' => $this->message
+                'message' => $this->message,
             ]);
 
             if ($response->successful()) {
 
                 Mail::raw($this->message, function ($message) {
                     $message->to($this->email)
-                            ->subject('Notificação de Pagamento');
+                        ->subject('Notificação de Pagamento');
                 });
 
                 Log::info("Notification successfully sent to: {$this->email}");
             } else {
                 Log::warning("Notification service returned error for: {$this->email}", [
                     'status' => $response->status(),
-                    'response' => $response->body()
+                    'response' => $response->body(),
                 ]);
                 // Requeue the job to try again later
                 $this->release(60); // Retry after 60 seconds
             }
         } catch (\Exception $e) {
             Log::error("Failed to send notification to: {$this->email}", [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             $this->release(60); // Retry after 60 seconds
         }
@@ -81,14 +78,13 @@ class SendNotificationJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param \Throwable $exception
      * @return void
      */
     public function failed(\Throwable $exception)
     {
         Log::critical("Notification job failed for: {$this->email}", [
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 class UserCreationTest extends TestCase
 {
@@ -60,7 +60,7 @@ class UserCreationTest extends TestCase
     public function test_user_creation_fails_with_duplicate_email()
     {
         User::factory()->create([
-            'email' => 'joao@example.com'
+            'email' => 'joao@example.com',
         ]);
 
         $payload = [

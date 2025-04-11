@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/test-email', function () {
+    Mail::raw('Este é um e-mail de teste enviado pelo MailHog.', function ($message) {
+        $message->to('teste@exemplo.com')
+            ->subject('Teste de E-mail');
+    });
+
+    return 'E-mail enviado!';
 });

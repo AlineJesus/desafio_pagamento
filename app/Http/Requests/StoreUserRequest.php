@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
 {
@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'document' => 'required|string|unique:users,document', // Validação de unicidade do CPF ou CNPJ
-            'password'  => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8|confirmed',
             'type' => 'required|in:common,shopkeeper',
             'balance' => 'nullable|numeric|min:0',
         ];
@@ -38,17 +38,17 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'full_name.required' => 'O nome completo é obrigatório.',
-            'email.required'     => 'O e-mail é obrigatório.',
-            'email.email'        => 'O e-mail deve ser válido.',
-            'email.unique'       => 'Este CPF ou CNPJ já está cadastrado.',
-            'document.required'  => 'O CPF ou CNPJ é obrigatório.',
-            'password.required'  => 'A senha é obrigatória.',
-            'password.min'       => 'A senha deve ter pelo menos 8 caracteres.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'email.unique' => 'Este CPF ou CNPJ já está cadastrado.',
+            'document.required' => 'O CPF ou CNPJ é obrigatório.',
+            'password.required' => 'A senha é obrigatória.',
+            'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
             'password.confirmed' => 'A confirmação da senha não corresponde.',
-            'type.required'      => 'O tipo de usuário é obrigatório.',
-            'type.in'            => 'O tipo de usuário deve ser "common" ou "shopkeeper".',
-            'balance.numeric'    => 'O saldo deve ser um número.',
-            'balance.min'        => 'O saldo não pode ser negativo.',
+            'type.required' => 'O tipo de usuário é obrigatório.',
+            'type.in' => 'O tipo de usuário deve ser "common" ou "shopkeeper".',
+            'balance.numeric' => 'O saldo deve ser um número.',
+            'balance.min' => 'O saldo não pode ser negativo.',
         ];
     }
 
@@ -60,8 +60,7 @@ class StoreUserRequest extends FormRequest
      * - Isso evita erros ao tentar converter arrays, objetos ou null para string
      * - Resolve o aviso do Larastan sobre type safety no casting misto
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     public function withValidator($validator): void
     {
@@ -74,11 +73,11 @@ class StoreUserRequest extends FormRequest
 
             $type = $this->input('type');
 
-            if ($type === 'common' && !User::isValidCpf($document)) {
+            if ($type === 'common' && ! User::isValidCpf($document)) {
                 $validator->errors()->add('document', 'CPF inválido.');
             }
 
-            if ($type === 'shopkeeper' && !User::isValidCnpj($document)) {
+            if ($type === 'shopkeeper' && ! User::isValidCnpj($document)) {
                 $validator->errors()->add('document', 'CNPJ inválido.');
             }
         });

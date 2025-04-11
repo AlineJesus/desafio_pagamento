@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -55,8 +54,8 @@ class User extends Authenticatable
 
     /**
      * Valida se um CPF é válido.
-     * 
-     * @param string|null $cpf CPF a ser validado (pode ser formatado)
+     *
+     * @param  string|null  $cpf  CPF a ser validado (pode ser formatado)
      * @return bool Retorna true se o CPF for válido
      */
     public static function isValidCpf(?string $cpf): bool
@@ -66,7 +65,7 @@ class User extends Authenticatable
         }
 
         $cleanedCpf = preg_replace('/\D/', '', $cpf);
-        
+
         if ($cleanedCpf === null || strlen($cleanedCpf) !== 11) {
             return false;
         }
@@ -91,8 +90,8 @@ class User extends Authenticatable
 
     /**
      * Valida se um CNPJ é válido.
-     * 
-     * @param string|null $cnpj CNPJ a ser validado (pode ser formatado)
+     *
+     * @param  string|null  $cnpj  CNPJ a ser validado (pode ser formatado)
      * @return bool Retorna true se o CNPJ for válido
      */
     public static function isValidCnpj(?string $cnpj): bool
@@ -102,7 +101,7 @@ class User extends Authenticatable
         }
 
         $cleanedCnpj = preg_replace('/\D/', '', $cnpj);
-        
+
         if ($cleanedCnpj === null || strlen($cleanedCnpj) !== 14) {
             return false;
         }
@@ -131,8 +130,9 @@ class User extends Authenticatable
 
     /**
      * Verifica se o documento do usuário é válido de acordo com seu tipo.
-     * 
+     *
      * @return bool Retorna true se o documento for válido para o tipo de usuário
+     *
      * @throws \RuntimeException Se o tipo de usuário for inválido
      */
     public function isValidDocument(): bool
@@ -156,7 +156,7 @@ class User extends Authenticatable
         parent::boot();
 
         static::saving(function (User $user) {
-            if (!$user->isValidDocument()) {
+            if (! $user->isValidDocument()) {
                 throw new \RuntimeException('Documento inválido para o tipo de usuário.');
             }
         });

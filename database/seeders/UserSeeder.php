@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +17,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'full_name' => 'Usuário comum',
             'email' => 'comum@teste.com',
-            'document' => '85578814018',//CPF
+            'document' => '85578814018', // CPF
             'type' => 'common',
             'balance' => 1000,
             'password' => bcrypt('password123'), // Senha padrão
@@ -29,7 +28,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'full_name' => 'Lojista',
             'email' => 'lojista@teste.com',
-            'document' => '40125694000108',///CNPJ
+            'document' => '40125694000108', // /CNPJ
             'type' => 'shopkeeper',
             'balance' => 1000,
             'password' => bcrypt('password123'), // Senha padrão

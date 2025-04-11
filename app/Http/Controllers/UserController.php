@@ -10,9 +10,6 @@ class UserController extends Controller
 {
     /**
      * Armazena um novo usuário.
-     *
-     * @param  StoreUserRequest  $request
-     * @return JsonResponse
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
@@ -20,7 +17,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Usuário criado com sucesso!',
-            'data' => $user
+            'data' => $user,
         ], 201);
     }
 }

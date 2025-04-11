@@ -1,24 +1,21 @@
 <?php
+
 namespace App\Services;
 
-use App\Models\User;
+use App\Exceptions\InsufficientBalanceException;
+use App\Jobs\SendNotificationJob;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Exceptions\InsufficientBalanceException;
-use App\Jobs\SendNotificationJob;
 
 class TransferService
 {
     /**
      * Realiza a transferência de valores entre usuários.
      *
-     * @param User $payer
-     * @param User $payee
-     * @param float $amount
      * @throws \Exception
-     * @return void
      */
     public function transfer(User $payer, User $payee, float $amount): void
     {
@@ -29,7 +26,7 @@ class TransferService
 
         // Verifica se o usuário possui saldo suficiente
         if ($payer->balance < $amount) {
-            throw new InsufficientBalanceException();
+            throw new InsufficientBalanceException;
         }
 
         // Consulta o serviço autorizador externo
@@ -39,7 +36,7 @@ class TransferService
         Log::info('Resposta do serviço autorizador:', $response->json());
 
         // Verifica se a resposta foi bem-sucedida e se a autorização é verdadeira
-        if (!$response->ok() || !($response->json('data')['authorization'] ?? false)) {
+        if (! $response->ok() || ! ($response->json('data')['authorization'] ?? false)) {
             throw new \Exception('Unauthorized transaction.');
         }
 
@@ -61,6 +58,6 @@ class TransferService
 
         // Envia uma notificação para o recebedor
         SendNotificationJob::dispatch($payer->email, 'Payment received notification')
-        ->onQueue('notifications');
+            ->onQueue('notifications');
     }
 }

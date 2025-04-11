@@ -2,15 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 
 class TransferRequest extends FormRequest
 {
     /**
      * Determina se o usuário está autorizado a fazer essa requisição.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -40,12 +38,12 @@ class TransferRequest extends FormRequest
     {
         return [
             'value.required' => 'O valor da transferência é obrigatório.',
-            'value.numeric'  => 'O valor da transferência deve ser numérico.',
-            'value.min'      => 'O valor da transferência deve ser maior que zero.',
+            'value.numeric' => 'O valor da transferência deve ser numérico.',
+            'value.min' => 'O valor da transferência deve ser maior que zero.',
             'payer.required' => 'O pagador é obrigatório.',
-            'payer.exists'   => 'O pagador informado não existe.',
+            'payer.exists' => 'O pagador informado não existe.',
             'payee.required' => 'O recebedor é obrigatório.',
-            'payee.exists'   => 'O recebedor informado não existe.',
+            'payee.exists' => 'O recebedor informado não existe.',
             'payee.different' => 'O pagador e o recebedor devem ser diferentes.',
         ];
     }
@@ -56,7 +54,6 @@ class TransferRequest extends FormRequest
      * Aqui, verificamos se o usuário que está enviando o dinheiro (payer) é do tipo "common".
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
@@ -71,8 +68,6 @@ class TransferRequest extends FormRequest
 
     /**
      * Retorna o ID do pagador como inteiro.
-     *
-     * @return int
      */
     public function payer(): int
     {
@@ -81,8 +76,6 @@ class TransferRequest extends FormRequest
 
     /**
      * Retorna o ID do recebedor como inteiro.
-     *
-     * @return int
      */
     public function payee(): int
     {
@@ -91,8 +84,6 @@ class TransferRequest extends FormRequest
 
     /**
      * Retorna o valor da transferência como float.
-     *
-     * @return float
      */
     public function value(): float
     {

@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use App\Exceptions\InsufficientBalanceException;
 use App\Jobs\SendNotificationJob;
 
@@ -35,7 +35,11 @@ class TransferService
         // Consulta o serviço autorizador externo
         $response = Http::get('https://util.devi.tools/api/v2/authorize');
 
-        if (!$response->ok() || !$response->json('data.authorization')) {
+        // Loga a resposta do serviço autorizador
+        Log::info('Resposta do serviço autorizador:', $response->json());
+
+        // Verifica se a resposta foi bem-sucedida e se a autorização é verdadeira
+        if (!$response->ok() || !($response->json('data')['authorization'] ?? false)) {
             throw new \Exception('Unauthorized transaction.');
         }
 

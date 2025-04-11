@@ -65,9 +65,9 @@ class UserFactory extends Factory
     /**
      * Calcula os dígitos verificadores do CPF.
      *
-     * @param array $n
-     * @param int $t
-     * @return int
+     * @param array<int, int> $n Números do CPF para cálculo.
+     * @param int $t Posição do dígito a ser calculado.
+     * @return int Dígito verificador calculado.
      */
     private function calculateCpfDigit(array $n, int $t): int
     {
@@ -101,9 +101,9 @@ class UserFactory extends Factory
     /**
      * Calcula os dígitos verificadores do CNPJ.
      *
-     * @param array $n
-     * @param int $t
-     * @return int
+     * @param array<int, int> $n Números do CNPJ para cálculo.
+     * @param int $t Posição do dígito a ser calculado.
+     * @return int Dígito verificador calculado.
      */
     private function calculateCnpjDigit(array $n, int $t): int
     {

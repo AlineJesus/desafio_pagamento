@@ -24,9 +24,9 @@ class TransactionController extends Controller
      */
     public function transfer(TransferRequest $request): JsonResponse
     {
-        $payer  = User::findOrFail($request->payer); // Ajustado para "payer"
-        $payee  = User::findOrFail($request->payee); // Ajustado para "payee"
-        $amount = $request->value; // Ajustado para "value"
+        $payer  = User::findOrFail($request->payer()); // Usando o método payer()
+        $payee  = User::findOrFail($request->payee()); // Usando o método payee()
+        $amount = $request->value(); // Usando o método value()
 
         try {
             $this->transferService->transfer($payer, $payee, $amount);

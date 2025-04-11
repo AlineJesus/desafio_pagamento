@@ -1,14 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
-
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    public function store(StoreUserRequest $request)
+    /**
+     * Armazena um novo usuário.
+     *
+     * @param  StoreUserRequest  $request
+     * @return JsonResponse
+     */
+    public function store(StoreUserRequest $request): JsonResponse
     {
         $user = User::create($request->validated());
 

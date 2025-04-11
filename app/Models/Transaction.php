@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
@@ -12,7 +13,7 @@ class Transaction extends Model
     /**
      * Atributos que podem ser atribuídos em massa.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'payer_id',
@@ -22,16 +23,20 @@ class Transaction extends Model
 
     /**
      * Relacionamento com o usuário que paga (remetente).
+     *
+     * @return BelongsTo<User, Transaction>
      */
-    public function payer()
+    public function payer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'payer_id');
     }
 
     /**
      * Relacionamento com o usuário que recebe (destinatário).
+     *
+     * @return BelongsTo<User, Transaction>
      */
-    public function payee()
+    public function payee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'payee_id');
     }

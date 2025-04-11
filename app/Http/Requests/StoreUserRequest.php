@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Helpers\CpfHelper;
+use App\Models\User;
 
 class StoreUserRequest extends FormRequest
 {
@@ -12,6 +12,11 @@ class StoreUserRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Regras de validação para a solicitação.
+     *
+     * @return array<string, string> Regras de validação
+     */
     public function rules(): array
     {
         return [
@@ -50,13 +55,23 @@ class StoreUserRequest extends FormRequest
     /**
      * Adiciona validações personalizadas após as regras padrão.
      *
+     * A verificação usa is_scalar() para garantir segurança na conversão para string:
+     * - is_scalar() retorna true apenas para tipos básicos (string, int, float, bool)
+     * - Isso evita erros ao tentar converter arrays, objetos ou null para string
+     * - Resolve o aviso do Larastan sobre type safety no casting misto
+     *
      * @param \Illuminate\Validation\Validator $validator
      * @return void
      */
-    public function withValidator($validator)
+    public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            $document = $this->input('document'); // CPF ou CNPJ
+            $document = '';
+            if ($this->has('document')) {
+                $docValue = $this->input('document');
+                $document = is_scalar($docValue) ? strval($docValue) : '';
+            }
+
             $type = $this->input('type');
 
             if ($type === 'common' && !User::isValidCpf($document)) {

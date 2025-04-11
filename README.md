@@ -25,7 +25,7 @@
 
 Certifique-se de ter os seguintes requisitos instalados:
 
-- **PHP** (versão 8.0 ou superior)
+- **PHP** (versão 8.2 ou superior)
 - **Composer** (para gerenciar dependências do Laravel)
 - **MySQL**
 - **Node.js** e **npm** (para gerenciar dependências do frontend)

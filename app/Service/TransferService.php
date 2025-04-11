@@ -6,20 +6,11 @@ use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Retry;
 use App\Exceptions\InsufficientBalanceException;
 use App\Jobs\SendNotificationJob;
-//use App\Services\NotificationService;
 
 class TransferService
 {
-    /* protected NotificationService $notificationService;
-
-    public function __construct(NotificationService $notificationService)
-    {
-        $this->notificationService = $notificationService;
-    } */
-
     /**
      * Realiza a transferência de valores entre usuários.
      *
@@ -27,10 +18,10 @@ class TransferService
      * @param User $payee
      * @param float $amount
      * @throws \Exception
+     * @return void
      */
-    public function transfer(User $payer, User $payee, float $amount)
+    public function transfer(User $payer, User $payee, float $amount): void
     {
-
         // Verifica se o pagador é um lojista
         if ($payer->type === 'shopkeeper') {
             throw new \Exception('Lojistas não podem enviar dinheiro.');
@@ -42,7 +33,7 @@ class TransferService
         }
 
         // Consulta o serviço autorizador externo
-        $response = Http::get('https://util.devi.tools/api/v1/authorize');
+        $response = Http::get('https://util.devi.tools/api/v2/authorize');
 
         if (!$response->ok() || !$response->json('data.authorization')) {
             throw new \Exception('Unauthorized transaction.');
@@ -65,18 +56,7 @@ class TransferService
         });
 
         // Envia uma notificação para o recebedor
-        /* $message = "Você recebeu uma transferência de R$ {$amount} de {$payer->full_name}.";
-        $notificationSent = Retry::times(3)->catch(function () {
-            return false;
-        })->run(function () use ($payee, $message) {
-            return $this->notificationService->sendNotification($payee->email, $message);
-        });
-
-        if (!$notificationSent) {
-            throw new \Exception('Falha ao enviar notificação ao recebedor após múltiplas tentativas.');
-        } */
-
-        SendNotificationJob::dispatch($payee);
-
+        SendNotificationJob::dispatch($payer->email, 'Payment received notification')
+        ->onQueue('notifications');
     }
 }

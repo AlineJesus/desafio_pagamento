@@ -12,7 +12,7 @@ class TransferRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -20,9 +20,9 @@ class TransferRequest extends FormRequest
     /**
      * Define as regras de validação para os dados enviados.
      *
-     * @return array
+     * @return array<string, string> Regras de validação
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'value' => 'required|numeric|min:0.01', // Valor da transferência
@@ -34,9 +34,9 @@ class TransferRequest extends FormRequest
     /**
      * Define as mensagens de erro para as validações.
      *
-     * @return array
+     * @return array<string, string> Mensagens de erro
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             'value.required' => 'O valor da transferência é obrigatório.',
@@ -56,15 +56,46 @@ class TransferRequest extends FormRequest
      * Aqui, verificamos se o usuário que está enviando o dinheiro (payer) é do tipo "common".
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
      */
-    public function withValidator($validator)
+    public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             $payer = User::find($this->input('payer'));
 
-            if ($payer && $payer->type !== 'common') {
+            if ($payer instanceof User && $payer->type !== 'common') {
                 $validator->errors()->add('payer', 'Somente usuários do tipo "common" podem realizar transferências.');
             }
         });
+    }
+
+    /**
+     * Retorna o ID do pagador como inteiro.
+     *
+     * @return int
+     */
+    public function payer(): int
+    {
+        return is_numeric($this->input('payer')) ? (int) $this->input('payer') : 0;
+    }
+
+    /**
+     * Retorna o ID do recebedor como inteiro.
+     *
+     * @return int
+     */
+    public function payee(): int
+    {
+        return is_numeric($this->input('payee')) ? (int) $this->input('payee') : 0;
+    }
+
+    /**
+     * Retorna o valor da transferência como float.
+     *
+     * @return float
+     */
+    public function value(): float
+    {
+        return is_numeric($this->input('value')) ? (float) $this->input('value') : 0.0;
     }
 }

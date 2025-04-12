@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/test-email', function () {
     Mail::raw('Este é um e-mail de teste enviado pelo MailHog.', function ($message) {
         $message->to('teste@exemplo.com')
@@ -25,4 +21,8 @@ Route::get('/test-email', function () {
     });
 
     return 'E-mail enviado!';
+});
+
+Route::get('/', function () {
+    return response()->file(public_path('docs/api-docs.html'));
 });

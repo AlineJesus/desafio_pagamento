@@ -15,9 +15,10 @@ class UserCreationTest extends TestCase
         $payload = [
             'full_name' => 'Maria Souza',
             'email' => 'maria@example.com',
-            'cpf' => '52998224725',
+            'document' => '52998224725', // CPF válido
             'type' => 'common',
             'balance' => 100.00,
+            'password' => 'password123', // Senha obrigatória
         ];
 
         $response = $this->postJson('/api/users', $payload);
@@ -38,15 +39,15 @@ class UserCreationTest extends TestCase
         $payload = [
             'full_name' => 'Carlos Silva',
             'email' => 'carlos@example.com',
-            'cpf' => '11111111111', // CPF inválido
+            'document' => '12345678900', // CPF inválido
             'type' => 'common',
-            'balance' => 100.00,
+            'password' => 'password123',
         ];
 
         $response = $this->postJson('/api/users', $payload);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['cpf']);
+            ->assertJsonValidationErrors(['document']);
     }
 
     public function test_user_creation_fails_with_missing_fields()
@@ -54,7 +55,7 @@ class UserCreationTest extends TestCase
         $response = $this->postJson('/api/users', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['full_name', 'email', 'cpf', 'type']);
+            ->assertJsonValidationErrors(['full_name', 'email', 'document', 'type', 'password']);
     }
 
     public function test_user_creation_fails_with_duplicate_email()

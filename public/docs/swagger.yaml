@@ -139,11 +139,52 @@ info:
 servers:
   - url: http://localhost:8000/api
     description: Servidor local de desenvolvimento
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
+  /login:
+    post:
+      summary: Autenticação de usuário
+      description: Endpoint para autenticar um usuário e gerar um token de acesso.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "joao.silva@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: Usuário autenticado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                  token_type:
+                    type: string
+                    example: "Bearer"
+        '401':
+          description: Credenciais inválidas.
   /users:
     post:
       summary: Criação de um novo usuário
       description: Endpoint para criar um novo usuário no sistema.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -203,6 +244,8 @@ paths:
 
 
         - Usuários sem saldo suficiente não podem realizar transferências.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:

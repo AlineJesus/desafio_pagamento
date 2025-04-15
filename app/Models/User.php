@@ -161,4 +161,9 @@ class User extends Authenticatable
             }
         });
     }
+
+    public function getNameWithEmailAttribute()
+    {
+        return "{$this->full_name} - {$this->email}";
+    }
 }

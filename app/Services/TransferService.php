@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-use App\Exceptions\InsufficientBalanceException;
 use App\Jobs\SendNotificationJob;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class TransferService
 {
@@ -19,21 +18,24 @@ class TransferService
      */
     public function transfer(User $payer, User $payee, float $amount): void
     {
-        // Verifica se o pagador é um lojista
-        if ($payer->type === 'shopkeeper') {
-            throw new \Exception('Lojistas não podem enviar dinheiro.');
+
+        if ($payer->id === $payee->id) {
+            throw new \Exception('Não pode transferir para si mesmo');
+        }
+
+        if ($payer->type !== 'common') {
+            throw new \Exception('Lojistas não podem fazer transferências');
         }
 
         // Verifica se o usuário possui saldo suficiente
         if ($payer->balance < $amount) {
-            throw new InsufficientBalanceException;
+            throw ValidationException::withMessages([
+                'value' => 'Insufficient balance to make the transfer.',
+            ]);
         }
 
         // Consulta o serviço autorizador externo
-        $response = Http::get('https://util.devi.tools/api/v2/authorize');
-
-        // Loga a resposta do serviço autorizador
-        Log::info('Resposta do serviço autorizador:', $response->json());
+        $response = Http::get(config('services.authorizer.url'));
 
         // Verifica se a resposta foi bem-sucedida e se a autorização é verdadeira
         if (! $response->ok() || ! ($response->json('data')['authorization'] ?? false)) {
@@ -57,7 +59,8 @@ class TransferService
         });
 
         // Envia uma notificação para o recebedor
-        SendNotificationJob::dispatch($payer->email, 'Payment received notification')
-            ->onQueue('notifications');
+        SendNotificationJob::dispatch($payee->email, 'Payment received notification');
+        /* SendNotificationJob::dispatch($payer->email, 'Payment received notification')
+            ->onQueue('notifications'); */
     }
 }

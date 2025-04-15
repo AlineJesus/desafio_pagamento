@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransferRequest;
 use App\Models\User;
 use App\Services\TransferService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
@@ -17,24 +16,39 @@ class TransactionController extends Controller
         $this->transferService = $transferService;
     }
 
+    public function index()
+    {
+        $payer = auth()->user();
+
+        return view('dashboard', [
+            'shopkeeper' => User::where('type', 'shopkeeper')->get(),
+            'type' => $payer->type,
+        ]);
+
+    }
+
     /**
      * Realiza a transferência de valores entre usuários.
      */
-    public function transfer(TransferRequest $request): JsonResponse
+    public function transfer(TransferRequest $request)
     {
-        $payer = User::findOrFail($request->payer()); // Usando o método payer()
+
+        $payer = auth()->user(); // Usuário logado
         $payee = User::findOrFail($request->payee()); // Usando o método payee()
+        // $amount = $request->input('value');
         $amount = $request->value(); // Usando o método value()
 
         try {
             $this->transferService->transfer($payer, $payee, $amount);
-            Log::info('Transferência realizada com sucesso');
 
-            return response()->json(['message' => 'Transferência realizada com sucesso.'], 200);
+            return redirect()->route('dashboard')->with('success', 'Transferência realizada!');
+
+        } catch (ValidationException $e) {
+            // Captura específica de erros de validação
+            return redirect()->back()->withErrors($e->errors());
         } catch (\Exception $e) {
-            Log::error('Erro na transferência', ['error' => $e->getMessage()]);
 
-            return response()->json(['error' => $e->getMessage()], 422);
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 }

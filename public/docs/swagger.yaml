@@ -25,15 +25,15 @@ info:
 
       ## Funcionalidades Principais
 
-      1. **Criação de usuários com diferentes tipos (comum e lojista)**
+      1. **Criação de usuários (comum e lojista)**
 
       2. **Transferência de Valores**:
-          - Apenas usuários do tipo "common" (`comum`) podem realizar transferências.
+          - Apenas usuários do tipo `comum` podem realizar transferências.
           - O sistema verifica o saldo do pagador antes de realizar a transferência.
           - Transações são registradas no banco de dados.
 
       3. **Validação de Documentos**:
-          - Usuários do tipo "common" (`comum`) devem possuir um CPF válido.
+          - Usuários do tipo `comum` devem possuir um CPF válido.
           - Usuários do tipo "shopkeeper" devem possuir um CNPJ válido.
 
       4. **Notificações**:

@@ -132,7 +132,7 @@ info:
       ## Observações
 
       - Certifique-se de que o serviço autorizador externo `https://util.devi.tools/api/v2/authorize` esteja acessível.
-      - Apenas usuários com documentos válidos podem ser criados ou realizar transferências.
+      - Apenas usuários com documentos ( `document` CPF ou CNPJ ) válidos podem ser criados ou realizar transferências.
 
 
   version: 1.0.0
@@ -159,7 +159,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: "joao.silva@example.com"
+                  example: "comum@teste.com"
                 password:
                   type: string
                   example: "password123"
@@ -228,6 +228,39 @@ paths:
                     example: "Usuário criado com sucesso!"
                   data:
                     type: object
+        '422':
+          description: Erro de validação.
+    patch:
+      summary: Atualizar saldo de usuário
+      description: Endpoint para atualizar o saldo do usuario tipo common. Esse valor deve ser positivo e será incrementado ao saldo que já existir.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                balance:
+                  type: number
+                  format: float
+                  example: 1000.00
+      responses:
+        '200':
+          description: Usuário criado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Saldo atualizado com sucesso!!"
+                  balance::
+                    type: number
+                    format: float
+                    example: 1000.00
         '422':
           description: Erro de validação.
   /transfer:

@@ -92,6 +92,15 @@ info:
         ```
 
       ---
+      ## Laravel Pint
+      Para grantir que o código do projeto esteja sempre formatado de maneira consistente e seguindo os padrões do Laravel e PSR-12.
+      ```bash
+      vendor/bin/phpstan analyse
+      ```
+
+      ---
+
+      ## O PHPStan se concentra em encontrar erros no seu código sem realmente executá-lo.
 
       ## Testes
 

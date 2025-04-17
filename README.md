@@ -113,7 +113,7 @@ Inicie o servidor de desenvolvimento do Laravel:
 php artisan serve
 ```
 
-O projeto estará disponível em: [http://localhost:8000](http://localhost:8000)
+A documentação estará disponível em: [http://localhost:8000](http://localhost:8000)
 
 ---
 

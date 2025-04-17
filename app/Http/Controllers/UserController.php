@@ -12,7 +12,7 @@ class UserController extends Controller
     /**
      * Lista todos os usuarios
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $users = User::select('full_name', 'email', 'document', 'type', 'balance', 'id')->get();
 
@@ -33,7 +33,7 @@ class UserController extends Controller
             'full_name' => $userData['full_name'],
             'email' => $userData['email'],
             'document' => $userData['document'],
-            'password' => bcrypt($userData['password']),
+            'password' => bcrypt((string) $userData['password']),
             'balance' => $userData['balance'],
         ]);
 
@@ -55,6 +55,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request): JsonResponse
     {
+        /** @var User $user */
         $user = auth()->user();
         // Verifica se o usuário é do tipo 'common'
         if ($user->type !== 'common') {

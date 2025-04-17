@@ -71,7 +71,7 @@ class TransferRequest extends FormRequest
      */
     public function payer(): int
     {
-        return (int) $this->input('payer');
+        return is_numeric($this->input('payer')) ? (int) $this->input('payer') : 0;
     }
 
     /**
@@ -79,7 +79,7 @@ class TransferRequest extends FormRequest
      */
     public function payee(): int
     {
-        return (int) $this->input('payee');
+        return is_numeric($this->input('payee')) ? (int) $this->input('payee') : 0;
     }
 
     /**

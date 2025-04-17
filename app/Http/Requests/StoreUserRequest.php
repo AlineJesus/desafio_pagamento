@@ -64,8 +64,9 @@ class StoreUserRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            $document = $this->input('document', '');
-            $document = preg_replace('/\D/', '', $document); // Remove caracteres não numéricos
+            /** @var string $document */
+            $document = $this->validated('document', '');
+            $document = preg_replace('/\D/', '', $document);
 
             $isCpfValid = User::isValidCpf($document);
             $isCnpjValid = User::isValidCnpj($document);

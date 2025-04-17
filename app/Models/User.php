@@ -148,7 +148,6 @@ class User extends Authenticatable
         return match ($this->type) {
             'common' => self::isValidCpf($this->document),
             'shopkeeper' => self::isValidCnpj($this->document),
-            default => throw new \RuntimeException('Tipo de usuário inválido'),
         };
     }
 
@@ -170,7 +169,7 @@ class User extends Authenticatable
         });
     }
 
-    public function getNameWithEmailAttribute()
+    public function getNameWithEmailAttribute(): string
     {
         return "{$this->full_name} - {$this->email}";
     }

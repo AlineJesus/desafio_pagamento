@@ -20,11 +20,11 @@ class TransferService
     {
 
         if ($payer->id === $payee->id) {
-            throw new \Exception('Não pode transferir para si mesmo');
+            throw new \Exception('Cannot transfer to yourself');
         }
 
         if ($payer->type !== 'common') {
-            throw new \Exception('Lojistas não podem fazer transferências');
+            throw new \Exception('Shopkeepers cannot make transfers');
         }
 
         // Verifica se o usuário possui saldo suficiente
@@ -36,10 +36,33 @@ class TransferService
 
         // Consulta o serviço autorizador externo
         $url = config('services.authorizer.url');
+
+        if (! is_string($url) || empty($url)) {
+            throw new \Exception('Invalid authorizer service URL.');
+        }
+
         $response = Http::get($url);
 
-        // Verifica se a resposta foi bem-sucedida e se a autorização é verdadeira
-        if (! $response->ok() || ! ($response->json('data')['authorization'] ?? false)) {
+        if (! $response->ok()) {
+            throw new \Exception('Failed to query the authorizing service.');
+        }
+
+        $responseData = $response->json();
+
+        // Validate response structure
+        if (! is_array($responseData)) {
+            throw new \Exception('Invalid authorizer service response.');
+        }
+
+        if (! isset($responseData['status']) || $responseData['status'] !== 'success') {
+            throw new \Exception('Authorizer service returned a non-success status.');
+        }
+
+        if (! isset($responseData['data']) || ! is_array($responseData['data'])) {
+            throw new \Exception('Invalid authorizer service response format.');
+        }
+
+        if (! isset($responseData['data']['authorization']) || $responseData['data']['authorization'] !== true) {
             throw new \Exception('Unauthorized transaction.');
         }
 
@@ -61,7 +84,5 @@ class TransferService
 
         // Envia uma notificação para o recebedor
         SendNotificationJob::dispatch($payee->email, 'Payment received notification');
-        /* SendNotificationJob::dispatch($payer->email, 'Payment received notification')
-            ->onQueue('notifications'); */
     }
 }

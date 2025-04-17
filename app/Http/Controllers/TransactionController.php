@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransferRequest;
 use App\Models\User;
 use App\Services\TransferService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 
 class TransactionController extends Controller
 {
@@ -15,8 +17,9 @@ class TransactionController extends Controller
         $this->transferService = $transferService;
     }
 
-    public function index()
+    public function index(): View
     {
+        /** @var User $payer */
         $payer = auth()->user();
 
         return view('dashboard', [
@@ -29,7 +32,7 @@ class TransactionController extends Controller
     /**
      * Realiza a transferência de valores entre usuários.
      */
-    public function transfer(TransferRequest $request)
+    public function transfer(TransferRequest $request): JsonResponse
     {
 
         $payer = auth()->user(); // Usuário logado

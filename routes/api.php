@@ -20,6 +20,7 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/users', [UserController::class, 'index']);
     Route::patch('/users', [UserController::class, 'update']);
     Route::post('/users', [UserController::class, 'store']);
     Route::post('/transfer', [TransactionController::class, 'transfer']);

@@ -10,6 +10,19 @@ use Illuminate\Http\JsonResponse;
 class UserController extends Controller
 {
     /**
+     * Lista todos os usuarios
+     */
+    public function index()
+    {
+        $users = User::select('full_name', 'email', 'type', 'balance')->get();
+
+        return response()->json([
+            'message' => 'Sucesso!',
+            'data' => $users,
+        ], 201);
+    }
+
+    /**
      * Armazena um novo usuário.
      */
     public function store(StoreUserRequest $request): JsonResponse

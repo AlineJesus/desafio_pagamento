@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -15,13 +14,12 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (! Auth::attempt($credentials)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if (! Auth::guard('web')->attempt($credentials)) {
+            return response()->json(['error' => 'The provided credentials are incorrect.'], 401);
         }
 
-        $user = $request->user();
+        // Gere o token Sanctum após a autenticação
+        $user = Auth::guard('web')->user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

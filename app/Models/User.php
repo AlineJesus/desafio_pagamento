@@ -129,7 +129,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Verifica se o documento do usuário é válido de acordo com seu tipo.
+     * Valida o documento com base no tipo
      *
      * @return bool Retorna true se o documento for válido para o tipo de usuário
      *
@@ -141,14 +141,15 @@ class User extends Authenticatable
             return false;
         }
 
-        switch ($this->type) {
-            case 'common':
-                return self::isValidCpf($this->document);
-            case 'shopkeeper':
-                return self::isValidCnpj($this->document);
-            default:
-                throw new \RuntimeException('Tipo de usuário inválido');
+        if ($this->type === null) {
+            throw new \RuntimeException('Tipo de usuário não definido.');
         }
+
+        return match ($this->type) {
+            'common' => self::isValidCpf($this->document),
+            'shopkeeper' => self::isValidCnpj($this->document),
+            default => throw new \RuntimeException('Tipo de usuário inválido'),
+        };
     }
 
     protected static function boot()
@@ -156,6 +157,13 @@ class User extends Authenticatable
         parent::boot();
 
         static::saving(function (User $user) {
+            // Se o tipo não estiver definido, determine-o automaticamente
+            if ($user->type === null) {
+                $document = preg_replace('/\D/', '', $user->document);
+                $user->type = User::isValidCpf($document) ? 'common' : 'shopkeeper';
+            }
+
+            // Valida o documento após definir o tipo
             if (! $user->isValidDocument()) {
                 throw new \RuntimeException('Documento inválido para o tipo de usuário.');
             }

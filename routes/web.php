@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('auth.login');
+    return response()->file(public_path('docs/api-docs.html'));
 });
 
 Route::get('/dashboard', function () {
@@ -33,3 +33,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+/* TODO tratar mensagem quando o token for invalido
+finalizar exibição do documentação ger users
+*/

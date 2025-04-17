@@ -4,14 +4,10 @@ info:
   description: >
     API para gerenciar transferências de valores entre usuários.
 
-    **Funcionalidades principais:**
-    - Criação de usuários com diferentes tipos (comum e lojista).
-    - Transferência de valores entre usuários cadastrados.
-    - Validação de saldo e permissões antes de realizar transferências.
 
     **Regras de negócio:**
-    - Usuários do tipo "lojista" não podem realizar transferências.
-    - Transferências só podem ser realizadas se o saldo do pagador for suficiente.
+      - Usuários do tipo `lojista`` não podem realizar transferências.
+      - Transferências só podem ser realizadas se o saldo do pagador for suficiente.
 
     **Autenticação:**
     - A API utiliza autenticação baseada em tokens.
@@ -29,20 +25,22 @@ info:
 
       ## Funcionalidades Principais
 
-      1. **Transferência de Valores**:
-        - Apenas usuários do tipo "common" (`comum`) podem realizar transferências.
-        - O sistema verifica o saldo do pagador antes de realizar a transferência.
-        - Transações são registradas no banco de dados.
+      1. **Criação de usuários com diferentes tipos (comum e lojista)**
 
-      2. **Validação de Documentos**:
-        - Usuários do tipo "common" (`comum`) devem possuir um CPF válido.
-        - Usuários do tipo "shopkeeper" devem possuir um CNPJ válido.
+      2. **Transferência de Valores**:
+          - Apenas usuários do tipo "common" (`comum`) podem realizar transferências.
+          - O sistema verifica o saldo do pagador antes de realizar a transferência.
+          - Transações são registradas no banco de dados.
 
-      3. **Notificações**:
-        - Após uma transferência bem-sucedida, o recebedor é notificado via e-mail.
+      3. **Validação de Documentos**:
+          - Usuários do tipo "common" (`comum`) devem possuir um CPF válido.
+          - Usuários do tipo "shopkeeper" devem possuir um CNPJ válido.
 
-      4. **Serviço Autorizador**:
-        - Antes de realizar a transferência, o sistema consulta um serviço externo para autorização.
+      4. **Notificações**:
+          - Após uma transferência bem-sucedida, o recebedor é notificado via e-mail.
+
+      5. **Serviço Autorizador**:
+          - Antes de realizar a transferência, o sistema consulta um serviço externo para autorização.
 
       ---
 
@@ -101,22 +99,6 @@ info:
       ```bash
       php artisan test
       ```
-
-      ---
-
-      ## Endpoints da API
-
-      ### Transferência de Valores
-
-      - **URL**: `/api/transfer`
-      - **Método**: `POST`
-      - **Parâmetros**:
-        - `value`: Valor da transferência (float).
-        - `payer`: ID do pagador (int).
-        - `payee`: ID do recebedor (int).
-      - **Respostas**:
-        - `200`: Transferência realizada com sucesso.
-        - `422`: Erro de validação ou saldo insuficiente.
 
       ---
 
@@ -180,6 +162,57 @@ paths:
         '401':
           description: Credenciais inválidas.
   /users:
+    get:
+      summary: Lista usuários cadastrados
+      description: Endpoint para listar usuários do sistema.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista usuários cadastrados.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Sucesso!"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        full_name:
+                          type: string
+                          description: Usuário comum,
+                        email:
+                          type: string
+                        document:
+                          type: string
+                        balance:
+                          type: number
+                          example: "1101.47"
+                        type:
+                          type: string
+                          example: "common"
+                        id:
+                          type: string
+                    example:
+                      - full_name: "João Silva"
+                        email: "joao.silva@example.com"
+                        document: "85578814018"
+                        type: "common"
+                        balance: 1101.47
+                        id: "1"
+                      - full_name: "Maria Souza"
+                        email: "maria.souza@example.com"
+                        document: "40125694000108"
+                        type: "shopkeeper"
+                        balance: 985.50
+                        id: "2"
+        '422':
+          description: Erro de validação.
     post:
       summary: Criação de um novo usuário
       description: Endpoint para criar um novo usuário no sistema.
@@ -192,29 +225,27 @@ paths:
             schema:
               type: object
               properties:
-                full_name:
-                  type: string
-                  example: "João Silva"
-                email:
-                  type: string
-                  example: "joao.silva@example.com"
-                document:
-                  type: string
-                  example: "12345678901"
-                password:
-                  type: string
-                  example: "password123"
-                password_confirmation:
-                  type: string
-                  example: "password123"
-                type:
-                  type: string
-                  enum: [common, shopkeeper]
-                  example: "common"
-                balance:
-                  type: number
-                  format: float
-                  example: 1000.00
+                  data:
+                    type: array
+                  full_name:
+                    type: string
+                    example: "João Silva"
+                  email:
+                    type: string
+                    example: "joao.silva@example.com"
+                  document:
+                    type: string
+                    example: "99422401011"
+                  type:
+                    type: string
+                    enum: [common, shopkeeper]
+                    example: "common"
+                  balance:
+                    type: number
+                    format: float
+                    example: 1000.00
+                  id:
+                    type: string
       responses:
         '201':
           description: Usuário criado com sucesso.

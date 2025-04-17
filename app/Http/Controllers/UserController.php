@@ -14,12 +14,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::select('full_name', 'email', 'type', 'balance')->get();
+        $users = User::select('full_name', 'email', 'document', 'type', 'balance', 'id')->get();
 
         return response()->json([
             'message' => 'Sucesso!',
             'data' => $users,
-        ], 201);
+        ], 200);
     }
 
     /**
@@ -27,11 +27,26 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
+        $userData = $request->validated();
+
+        $user = User::create([
+            'full_name' => $userData['full_name'],
+            'email' => $userData['email'],
+            'document' => $userData['document'],
+            'password' => bcrypt($userData['password']),
+            'balance' => $userData['balance'],
+        ]);
 
         return response()->json([
             'message' => 'Usuário criado com sucesso!',
-            'data' => $user,
+            'data' => [
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'document' => $user->document,
+                'type' => $user->type,
+                'balance' => $user->balance,
+                'id' => $user->id,
+            ],
         ], 201);
     }
 

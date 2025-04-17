@@ -20,7 +20,10 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/users', [UserController::class, 'store']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware([
+    EnsureFrontendRequestsAreStateful::class,
+    'auth:sanctum',
+])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::patch('/users', [UserController::class, 'update']);
     Route::post('/transfer', [TransactionController::class, 'transfer']);
@@ -28,5 +31,5 @@ Route::middleware('auth:sanctum')->group(function () {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Deslogado com sucesso!']);
-    })->middleware(EnsureFrontendRequestsAreStateful::class);
+    });
 });

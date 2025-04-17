@@ -35,7 +35,8 @@ class TransferService
         }
 
         // Consulta o serviço autorizador externo
-        $response = Http::get(config('services.authorizer.url'));
+        $url = config('services.authorizer.url');
+        $response = Http::get($url);
 
         // Verifica se a resposta foi bem-sucedida e se a autorização é verdadeira
         if (! $response->ok() || ! ($response->json('data')['authorization'] ?? false)) {

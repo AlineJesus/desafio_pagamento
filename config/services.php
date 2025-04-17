@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'authorizer' => [
+        'url' => env('AUTHORIZER_URL'),
+    ],
+
 ];

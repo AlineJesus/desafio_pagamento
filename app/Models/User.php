@@ -142,7 +142,7 @@ class User extends Authenticatable
         }
 
         if ($this->type === null) {
-            throw new \RuntimeException('Tipo de usuário não definido.');
+            throw new \RuntimeException('User type not defined.');
         }
 
         return match ($this->type) {
@@ -164,7 +164,7 @@ class User extends Authenticatable
 
             // Valida o documento após definir o tipo
             if (! $user->isValidDocument()) {
-                throw new \RuntimeException('Documento inválido para o tipo de usuário.');
+                throw new \RuntimeException('Invalid document for user type.');
             }
         });
     }

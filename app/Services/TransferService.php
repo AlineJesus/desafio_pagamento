@@ -83,6 +83,10 @@ class TransferService
         });
 
         // Envia uma notificação para o recebedor
-        SendNotificationJob::dispatch($payee->email, 'Payment received notification');
+
+        $formattedAmount = number_format($amount, 2, ',', '.');
+        $subject = 'Payment received notification';
+
+        SendNotificationJob::dispatch($payee->email, $subject, $formattedAmount, $payer->full_name);
     }
 }

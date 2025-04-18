@@ -17,7 +17,7 @@ class UserController extends Controller
         $users = User::select('full_name', 'email', 'document', 'type', 'balance', 'id')->get();
 
         return response()->json([
-            'message' => 'Sucesso!',
+            'message' => 'Success!',
             'data' => $users,
         ], 200);
     }
@@ -38,7 +38,7 @@ class UserController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Usuário criado com sucesso!',
+            'message' => 'User created successfully!',
             'data' => [
                 'full_name' => $user->full_name,
                 'email' => $user->email,
@@ -60,7 +60,7 @@ class UserController extends Controller
         // Verifica se o usuário é do tipo 'common'
         if ($user->type !== 'common') {
             return response()->json([
-                'error' => 'Apenas usuários comuns podem atualizar o saldo.',
+                'error' => 'Only regular users can update balance.',
             ], 403);
         }
 
@@ -68,7 +68,7 @@ class UserController extends Controller
         $user->increment('balance', $request->balance);
 
         return response()->json([
-            'message' => 'Saldo atualizado com sucesso!',
+            'message' => 'Balance updated successfully!',
             'balance' => $user->balance,
         ], 200);
     }

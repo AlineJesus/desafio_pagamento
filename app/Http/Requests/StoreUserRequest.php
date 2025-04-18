@@ -24,7 +24,6 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'document' => 'required|string|max:20|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|string|min:8',
             'balance' => 'required|numeric',
             'type' => 'sometimes|string',
         ];
@@ -38,16 +37,16 @@ class StoreUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'full_name.required' => 'O nome completo é obrigatório.',
-            'email.required' => 'O e-mail é obrigatório.',
-            'email.email' => 'O e-mail deve ser válido.',
-            'email.unique' => 'Este e-mail já está cadastrado.',
-            'document.unique' => 'Este CPF ou CNPJ já está cadastrado.',
-            'document.required' => 'O CPF ou CNPJ é obrigatório.',
-            'password.required' => 'A senha é obrigatória.',
-            'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
-            'balance.numeric' => 'O saldo deve ser um número.',
-            'balance.min' => 'O saldo não pode ser negativo.',
+            'full_name.required' => 'Full name is required',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Email must be valid.',
+            'email.unique' => 'This email is already registered.',
+            'document.unique' => 'This CPF or CNPJ is already registered.',
+            'document.required' => 'CPF or CNPJ is mandatory.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters long.',
+            'balance.numeric' => 'The balance must be a number.',
+            'balance.min' => 'The balance cannot be negative.',
         ];
     }
 
@@ -72,7 +71,7 @@ class StoreUserRequest extends FormRequest
             $isCnpjValid = User::isValidCnpj($document);
 
             if (! $isCpfValid && ! $isCnpjValid) {
-                $validator->errors()->add('document', 'Documento inválido.');
+                $validator->errors()->add('document', 'Invalid document.');
 
                 return;
             }

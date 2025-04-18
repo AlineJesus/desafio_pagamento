@@ -30,6 +30,6 @@ Route::middleware([
     Route::post('/logout', function (Request $request) {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Deslogado com sucesso!']);
+        return response()->json(['message' => 'Logged out successfully!']);
     });
 });

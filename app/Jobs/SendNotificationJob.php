@@ -16,73 +16,89 @@ class SendNotificationJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The recipient email address
+     * O endereço de e-mail do destinatário
      *
      * @var string
      */
     protected $email;
 
     /**
-     * The notification message
+     * O assunto do e-mail
+     *
+     * @var string
+     */
+    protected $subject;
+
+    /**
+     * A mensagem de notificação
      *
      * @var string
      */
     protected $message;
 
     /**
-     * Create a new job instance.
+     * Cria uma nova instância do job.
      */
-    public function __construct(string $email, string $message = 'You have received a payment')
-    {
+    public function __construct(
+        string $email,
+        string $subject,
+        string $formattedAmount,
+        string $payerName
+    ) {
         $this->email = $email;
-        $this->message = $message;
+        $this->subject = $subject;
+        $this->message = sprintf(
+            'You have received a payment of R$ %s out of %s.',
+            $formattedAmount,
+            $payerName
+        );
     }
 
     /**
-     * Execute the job.
+     * Executa o job.
      *
      * @return void
      */
     public function handle()
     {
         try {
+            // Envia a notificação para o serviço externo
             $response = Http::post('https://util.devi.tools/api/v1/notify', [
                 'email' => $this->email,
                 'message' => $this->message,
             ]);
 
             if ($response->successful()) {
-
-                Mail::raw($this->message, function ($message) {
-                    $message->to($this->email)
-                        ->subject('Notificação de Pagamento');
+                // Envia o e-mail
+                Mail::raw($this->message, function ($mail) {
+                    $mail->to($this->email)
+                        ->subject($this->subject);
                 });
 
-                Log::info("Notification successfully sent to: {$this->email}");
+                Log::info("Notificação enviada para: {$this->email}");
             } else {
-                Log::warning("Notification service returned error for: {$this->email}", [
+                Log::warning("Serviço de notificação retornou erro para: {$this->email}", [
                     'status' => $response->status(),
                     'response' => $response->body(),
                 ]);
-                // Requeue the job to try again later
-                $this->release(60); // Retry after 60 seconds
+                $this->release(60); // Tenta novamente após 60 segundos
             }
         } catch (\Exception $e) {
-            Log::error("Failed to send notification to: {$this->email}", [
+            Log::error("Falha ao enviar notificação para: {$this->email}", [
                 'error' => $e->getMessage(),
             ]);
-            $this->release(60); // Retry after 60 seconds
+            $this->release(60); // Tenta novamente após 60 segundos
         }
     }
 
     /**
-     * Handle a job failure.
+     * Lida com a falha do job.
      *
      * @return void
      */
     public function failed(\Throwable $exception)
     {
-        Log::critical("Notification job failed for: {$this->email}", [
+        Log::critical("Job de notificação falhou para: {$this->email}", [
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
         ]);

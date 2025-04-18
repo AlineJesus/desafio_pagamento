@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class TransferRequest extends FormRequest
 {
@@ -24,7 +25,6 @@ class TransferRequest extends FormRequest
     {
         return [
             'value' => 'required|numeric|min:0.01', // Valor da transferência
-            'payer' => 'required|exists:users,id',  // ID do pagador
             'payee' => 'required|exists:users,id|different:payer', // ID do recebedor
         ];
     }
@@ -37,14 +37,14 @@ class TransferRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'value.required' => 'O valor da transferência é obrigatório.',
-            'value.numeric' => 'O valor da transferência deve ser numérico.',
-            'value.min' => 'O valor da transferência deve ser maior que zero.',
-            'payer.required' => 'O pagador é obrigatório.',
-            'payer.exists' => 'O pagador informado não existe.',
-            'payee.required' => 'O recebedor é obrigatório.',
-            'payee.exists' => 'O recebedor informado não existe.',
-            'payee.different' => 'O pagador e o recebedor devem ser diferentes.',
+            'value.required' => 'Transfer amount is required.',
+            'value.numeric' => 'Transfer amount must be numeric.',
+            'value.min' => 'Transfer amount must be greater than zero.',
+            'payer.required' => 'Payer is required.',
+            'payer.exists' => 'Payer does not exist.',
+            'payee.required' => 'Payee is required.',
+            'payee.exists' => 'Payee does not exist.',
+            'payee.different' => 'Payer and recipient must be different.',
         ];
     }
 
@@ -58,10 +58,10 @@ class TransferRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            $payer = User::find($this->input('payer'));
+            $payer = auth()->user(); // Usuário autenticado
 
-            if ($payer instanceof User && $payer->type !== 'common') {
-                $validator->errors()->add('payer', 'Somente usuários do tipo "common" podem realizar transferências.');
+            if ($payer->type !== 'common') {
+                $validator->errors()->add('payer', 'Only "common" type users can perform transfers.');
             }
         });
     }
@@ -88,5 +88,15 @@ class TransferRequest extends FormRequest
     public function value(): float
     {
         return is_numeric($this->input('value')) ? (float) $this->input('value') : 0.0;
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

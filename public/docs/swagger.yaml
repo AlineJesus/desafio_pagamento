@@ -352,10 +352,13 @@ paths:
 
         **Regras de negócio:**
 
-        - Usuários do tipo `lojistas` - "shopkeeper" não podem enviar dinheiro.
+        - Usuários do tipo `shopkeeper` não podem enviar dinheiro.
 
 
         - Usuários sem saldo suficiente não podem realizar transferências.
+
+
+        - A transferencia só pode ser feita pelo usuario autenticado do tipo `common`
       security:
         - bearerAuth: []
       requestBody:
@@ -369,9 +372,6 @@ paths:
                   type: number
                   format: float
                   example: 100.00
-                payer:
-                  type: integer
-                  example: 1
                 payee:
                   type: integer
                   example: 2
@@ -395,4 +395,4 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Insufficient balance."
+                    example: "Validation errors."

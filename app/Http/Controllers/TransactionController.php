@@ -42,7 +42,7 @@ class TransactionController extends Controller
         try {
             $this->transferService->transfer($payer, $payee, $amount);
 
-            return response()->json(['message' => 'Transferência realizada com sucesso.'], 200);
+            return response()->json(['message' => 'Transfer completed successfully.'], 200);
 
         } catch (\Exception $e) {
 
